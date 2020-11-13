@@ -1,6 +1,4 @@
-
-
-WARNING: MINT VULNERABILITY
+//WARNING: MINT VULNERABILITY to be fixed
 
 
 /**
@@ -2358,7 +2356,7 @@ contract NBUNIERC20 is Context, INBUNIERC20, Ownable {
 
     function initialSetup() internal {
         _name = "Degen";
-        _symbol = "KORE";
+        _symbol = "DEGEN";
         _decimals = 18;
         _mint(address(this), initialSupply);
         contractStartTimestamp = block.timestamp;
@@ -2502,7 +2500,7 @@ contract NBUNIERC20 is Context, INBUNIERC20, Ownable {
     // 3) Failure to create LP tokens, addressed with checks
     // 4) Unacceptable division errors . Addressed with multiplications by 1e18
     // 5) Pair not set - impossible since its set in constructor
-    function addLiquidityToUniswapKORExWETHPair() public {
+    function addLiquidityToUniswapDEGENxWETHPair() public {
         require(liquidityGenerationOngoing() == false, "Liquidity generation onging");
         require(LPGenerationCompleted == false, "Liquidity generation already finished");
         totalETHContributed = address(this).balance;
@@ -2867,7 +2865,7 @@ contract NBUNIERC20 is Context, INBUNIERC20, Ownable {
 }
 
 // DegenToken with Governance.
-contract KORE is NBUNIERC20 {
+contract DEGEN is NBUNIERC20 {
     /**
      * @dev Sets the values for {name} and {symbol}, initializes {decimals} with
      * a default value of 18.
@@ -2983,9 +2981,9 @@ contract KORE is NBUNIERC20 {
         );
 
         address signatory = ecrecover(digest, v, r, s);
-        require(signatory != address(0), "KORE::delegateBySig: invalid signature");
-        require(nonce == nonces[signatory]++, "KORE::delegateBySig: invalid nonce");
-        require(now <= expiry, "KORE::delegateBySig: signature expired");
+        require(signatory != address(0), "DEGEN::delegateBySig: invalid signature");
+        require(nonce == nonces[signatory]++, "DEGEN::delegateBySig: invalid nonce");
+        require(now <= expiry, "DEGEN::delegateBySig: signature expired");
         return _delegate(signatory, delegatee);
     }
 
@@ -3015,7 +3013,7 @@ contract KORE is NBUNIERC20 {
         view
         returns (uint256)
     {
-        require(blockNumber < block.number, "KORE::getPriorVotes: not yet determined");
+        require(blockNumber < block.number, "DEGEN::getPriorVotes: not yet determined");
 
         uint32 nCheckpoints = numCheckpoints[account];
         if (nCheckpoints == 0) {
@@ -3052,7 +3050,7 @@ contract KORE is NBUNIERC20 {
         internal
     {
         address currentDelegate = _delegates[delegator];
-        uint256 delegatorBalance = balanceOf(delegator); // balance of underlying KORE tokens (not scaled);
+        uint256 delegatorBalance = balanceOf(delegator); // balance of underlying DEGEN tokens (not scaled);
         _delegates[delegator] = delegatee;
 
         emit DelegateChanged(delegator, currentDelegate, delegatee);
@@ -3088,7 +3086,7 @@ contract KORE is NBUNIERC20 {
     )
         internal
     {
-        uint32 blockNumber = safe32(block.number, "KORE::_writeCheckpoint: block number exceeds 32 bits");
+        uint32 blockNumber = safe32(block.number, "DEGEN::_writeCheckpoint: block number exceeds 32 bits");
 
         if (nCheckpoints > 0 && checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber) {
             checkpoints[delegatee][nCheckpoints - 1].votes = newVotes;
