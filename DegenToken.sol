@@ -1,4 +1,4 @@
-//WARNING: MINT VULNERABILITY to be fixed
+//WARNING: MINT VULNERABILITY to be fixed from Kore (minter role)
 
 
 /**
@@ -2353,8 +2353,11 @@ contract NBUNIERC20 is Context, INBUNIERC20, Ownable {
     uint8 private _decimals;
     uint256 public constant initialSupply = 10000e18; // 10k
     uint256 public contractStartTimestamp;
+    uint256 public liquidityAdded;
+    uint256 public maxEarlyTransfer;   // Amount of tokens
+    uint256 public earlyTransferRestriction;    // Length of early transfer
 
-    function initialSetup() internal {
+    function initialSetup(uint256 _maxEarlyTransfer, uint256 _earlyTransferRestriction) internal {
         _name = "Degen";
         _symbol = "DEGEN";
         _decimals = 18;
@@ -2363,6 +2366,8 @@ contract NBUNIERC20 is Context, INBUNIERC20, Ownable {
         uniswapRouterV2 = IUniswapV2Router02(address(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D));
         uniswapFactory = IUniswapV2Factory(address(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f));
         createUniswapPairMainnet();
+        maxEarlyTransfer = _maxEarlyTransfer;
+        earlyTransferRestriction = _earlyTransferRestriction;
     }
 
     /**
@@ -2522,6 +2527,7 @@ contract NBUNIERC20 is Context, INBUNIERC20, Ownable {
         console.log("Total per LP token", LPperETHUnit);
         require(LPperETHUnit != 0 , "LP creation failed");
         LPGenerationCompleted = true;
+        liquidityAdded = now;
     }
 
     // Possible ways this could break addressed
@@ -2736,7 +2742,10 @@ contract NBUNIERC20 is Context, INBUNIERC20, Ownable {
         require(sender != address(0), "ERC20: transfer from the zero address");
         require(recipient != address(0), "ERC20: transfer to the zero address");
 
-
+        // If transffering tokens in the earlyTransferRestriction period, max transfer is maxEarlyTransfer
+        if(liquidityAdded.add(earlyTransferRestriction) > now) {
+            require(amount < maxEarlyTransfer)
+        }
 
         _beforeTokenTransfer(sender, recipient, amount);
 
